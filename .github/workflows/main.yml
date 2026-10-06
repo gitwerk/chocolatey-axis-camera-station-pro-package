@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to build and push (e.g. 5.59.56000)'
+        description: 'Tag to build and push (e.g. 6.18.27687)'
         required: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -46,4 +46,4 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
         uses: crazy-max/ghaction-chocolatey@v4
         with:
-          args: push axis-camera-station-client.${{ env.TAG }}.nupkg --source "https://push.chocolatey.org/" --api-key "${{ secrets.CHOCO_API_KEY }}" --allow-unofficial
+          args: push axis-camera-station-pro-client.${{ env.TAG }}.nupkg --source "https://push.chocolatey.org/" --api-key "${{ secrets.CHOCO_API_KEY }}" --allow-unofficial
