@@ -5,12 +5,8 @@ $checksum = '43A8BB41C13B96B722E14AF7E1701E5A971E9D408C83AB50DD6C4CD6AFFA7C91'
 
 $pp = Get-PackageParameters
 
-$eulaUrl = 'https://www.axis.com/legal/acs-download'
-if (-not $pp.ContainsKey('AcceptEula')) {
-  throw "AXIS Camera Station Pro may only be downloaded after accepting the Axis license agreement: $eulaUrl. Read it, then re-run with --params `"'/AcceptEula'`" to accept it."
-}
-
-# Axis redirects downloads to its EULA page; the page's continue link carries a short-lived token
+# Axis redirects downloads to its EULA page (accepted through the package's requireLicenseAcceptance);
+# the page's continue link carries a short-lived token
 $url = "https://www.axis.com/ftp/pub_soft/cam_srv/cam_station_pro/$($version -replace '\.', '_')/AXISCameraStationProClient_$version.msi"
 $request = [System.Net.WebRequest]::Create($url)
 $request.Method = 'HEAD'

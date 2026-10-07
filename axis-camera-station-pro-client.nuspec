@@ -11,6 +11,8 @@
     <projectUrl>https://www.axis.com/products/axis-camera-station-pro</projectUrl>
     <iconUrl>https://github.com/gitwerk/chocolatey-axis-camera-station-pro-package/raw/master/icon.png</iconUrl>
     <copyright>Axis Communications AB</copyright>
+    <licenseUrl>https://www.axis.com/legal/acs-download</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <docsUrl>https://help.axis.com/axis-camera-station-pro</docsUrl>
     <releaseNotes>https://www.axis.com/ftp/pub_soft/cam_srv/cam_station_pro/latest/relnote.txt</releaseNotes>
     <tags>axis camera-station-pro acs video surveillance vms client</tags>
@@ -21,11 +23,9 @@ This package installs the client only (no server). It requires 64-bit Windows an
 
 **Note:** AXIS Camera Station Pro is the successor of AXIS Camera Station 5 and uses the same Windows Installer upgrade code. Installing this package upgrades an existing AXIS Camera Station 5 client (for example from the `axis-camera-station-client` package) to Pro. The two clients can't be installed side by side.
 
+**License:** Axis only provides the installer after its license agreement (https://www.axis.com/legal/acs-download) has been accepted. By installing this package you accept that agreement.
+
 ## Package Parameters
-Axis only provides the installer after the Axis license agreement (https://www.axis.com/legal/acs-download) has been accepted. Read it and pass `/AcceptEula` to accept it; without this parameter the installation stops before anything is downloaded.
-
-- `/AcceptEula` - **Required.** Accept the Axis license agreement.
-
 By default the client is installed with firewall rules and a desktop shortcut, telemetry turned off, system TLS settings left alone, and no client launch or autostart.
 
 - `/Telemetry` - Allow Axis to collect usage data (telemetry consent).
@@ -33,7 +33,7 @@ By default the client is installed with firewall rules and a desktop shortcut, t
 - `/NoFirewall` - Don't create Windows Firewall rules for the client.
 - `/NoDesktopShortcut` - Don't create a desktop shortcut.
 
-Example: `choco install axis-camera-station-pro-client --params "'/AcceptEula /NoDesktopShortcut'"`
+Example: `choco install axis-camera-station-pro-client --params "'/NoDesktopShortcut'"`
 
 The installer language is detected from the system's regional settings.
 </description>

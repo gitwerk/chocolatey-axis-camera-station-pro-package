@@ -7,25 +7,24 @@ This repository contains the source of a Chocolatey package that installs and up
 > **AXIS Camera Station 5 vs. Pro:** Pro uses the same Windows Installer upgrade code as the AXIS Camera Station 5 client, so installing this package upgrades an existing ACS 5 client to Pro. The ACS 5 client is packaged separately as [`axis-camera-station-client`](https://github.com/gitwerk/chocolatey-axis-camera-station-package). Don't install both on the same machine.
 
 ## Installation
-Axis only provides the installer after its [license agreement](https://www.axis.com/legal/acs-download) has been accepted. Read it, then accept it with `/AcceptEula`:
+Axis only provides the installer after its [license agreement](https://www.axis.com/legal/acs-download) has been accepted. The package requires license acceptance, so by installing it you accept the Axis license agreement:
 
 ```bash
-choco upgrade axis-camera-station-pro-client --params "'/AcceptEula'"
+choco upgrade axis-camera-station-pro-client
 ```
 
-Without `/AcceptEula` the installation stops before anything is downloaded. With it, the package follows the link from the Axis license page (a short-lived download token) and still verifies the MSI's SHA256 checksum.
+The package follows the link from the Axis license page (a short-lived download token) and still verifies the MSI's SHA256 checksum.
 
 ### Package parameters
 | Parameter | Effect |
 |---|---|
-| `/AcceptEula` | **Required.** Accept the Axis license agreement |
 | `/Telemetry` | Allow Axis to collect usage data (off by default) |
 | `/DisableTls` | Let the installer turn off TLS 1.0/1.1 system-wide, after a reboot (off by default) |
 | `/NoFirewall` | Don't create Windows Firewall rules |
 | `/NoDesktopShortcut` | Don't create a desktop shortcut |
 
 ```bash
-choco upgrade axis-camera-station-pro-client --params "'/AcceptEula /NoDesktopShortcut'"
+choco upgrade axis-camera-station-pro-client --params "'/NoDesktopShortcut'"
 ```
 
 The client is never started or added to autostart by a silent install. The installer language is detected from the system's regional settings. Chocolatey does not remember package parameters on upgrade unless `useRememberedArgumentsForUpgrades` is enabled:
