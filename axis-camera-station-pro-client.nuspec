@@ -9,7 +9,7 @@
     <title>AXIS Camera Station Pro Client</title>
     <authors>Axis Communications AB</authors>
     <projectUrl>https://www.axis.com/products/axis-camera-station-pro</projectUrl>
-    <iconUrl>https://github.com/gitwerk/chocolatey-axis-camera-station-pro-package/raw/master/icon.png</iconUrl>
+    <iconUrl>https://cdn.jsdelivr.net/gh/gitwerk/chocolatey-axis-camera-station-pro-package@4d9b6b2eba91b20525a9d49a9a275b402862af4b/icon.png</iconUrl>
     <copyright>Axis Communications AB</copyright>
     <licenseUrl>https://www.axis.com/legal/acs-download</licenseUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
