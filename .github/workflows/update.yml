@@ -1,0 +1,71 @@
+name: Check for New Version
+
+# Opens a pull request when Axis publishes a new client version. Merging it starts release.yml.
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compare with the latest Axis version
+        id: version
+        run: |
+          latest=$(curl -fsSL https://www.axis.com/ftp/pub_soft/cam_srv/cam_station_pro/latest/ver.txt | tr -d '\r\n ')
+          current=$(sed -nE "s/^[$]version *= *'([^']+)'.*/\1/p" tools/chocolateyinstall.ps1)
+          echo "Packaged $current, latest $latest"
+          if ! [[ $latest =~ ^[0-9]+(\.[0-9]+)+$ ]]; then
+            echo "::error::Unexpected version '$latest' in ver.txt"
+            exit 1
+          fi
+          if [ "$(printf '%s\n%s\n' "$current" "$latest" | sort -V | tail -n1)" = "$current" ]; then
+            echo "Already up to date"
+          elif git ls-remote --exit-code --heads origin "update/$latest" > /dev/null; then
+            echo "Branch update/$latest already exists"
+          else
+            echo "new=$latest" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update version and checksum
+        if: steps.version.outputs.new
+        env:
+          VERSION: ${{ steps.version.outputs.new }}
+        run: |
+          # Axis redirects to its license page; the page's return link carries a download token
+          url="https://www.axis.com/ftp/pub_soft/cam_srv/cam_station_pro/${VERSION//./_}/AXISCameraStationProClient_$VERSION.msi"
+          location=$(curl -fsSI "$url" | tr -d '\r' | sed -n 's/^[Ll]ocation: //p')
+          if [ -n "$location" ]; then
+            url=$(python3 -c 'import sys, urllib.parse as u; print(u.urljoin("https://www.axis.com", u.parse_qs(u.urlsplit(sys.argv[1]).query)["return"][0]))' "$location")
+          fi
+          curl -fsSL -o "$RUNNER_TEMP/client.msi" "$url"
+          checksum=$(sha256sum "$RUNNER_TEMP/client.msi" | cut -d' ' -f1 | tr a-f A-F)
+          sed -i -E "s/^([$]version *= *')[^']+'/\1$VERSION'/; s/^([$]checksum *= *')[^']+'/\1$checksum'/" tools/chocolateyinstall.ps1
+          git diff
+
+      - name: Open pull request
+        if: steps.version.outputs.new
+        env:
+          VERSION: ${{ steps.version.outputs.new }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898248+github-actions[bot]@users.noreply.github.com'
+          git checkout -b "update/$VERSION"
+          git commit -am "Update to $VERSION"
+          git push origin "update/$VERSION"
+          gh pr create --base "${{ github.event.repository.default_branch }}" --head "update/$VERSION" \
+            --title "Update to $VERSION" \
+            --body "AXIS Camera Station Pro Client $VERSION is available ([release notes](https://www.axis.com/ftp/pub_soft/cam_srv/cam_station_pro/latest/relnote.txt)).
+
+          Merging this pull request tags \`$VERSION\` and publishes the package to Chocolatey."

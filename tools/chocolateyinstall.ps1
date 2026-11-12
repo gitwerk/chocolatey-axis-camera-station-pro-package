@@ -15,7 +15,8 @@ $response = $request.GetResponse()
 $location = $response.Headers['Location']
 $response.Close()
 if ($location -match 'return=([^&]+)') {
-  $url = "https://www.axis.com$([Uri]::UnescapeDataString($Matches[1]))"
+  # The return link may be absolute or relative to www.axis.com
+  $url = [Uri]::new([Uri]'https://www.axis.com', [Uri]::UnescapeDataString($Matches[1])).AbsoluteUri
 }
 
 # Documented AXIS Camera Station Pro MSI properties (all default to 1 in the MSI)

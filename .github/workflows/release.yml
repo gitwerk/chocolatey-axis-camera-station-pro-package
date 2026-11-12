@@ -1,0 +1,33 @@
+name: Tag Release
+
+# Tags the packaged version when it changes on master and starts main.yml to publish it.
+# Tags pushed with GITHUB_TOKEN don't trigger other workflows, so main.yml is started explicitly.
+on:
+  push:
+    branches: [ master ]
+    paths: [ tools/chocolateyinstall.ps1 ]
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Tag and publish
+        run: |
+          version=$(sed -nE "s/^[$]version *= *'([^']+)'.*/\1/p" tools/chocolateyinstall.ps1)
+          if git ls-remote --exit-code --tags origin "refs/tags/$version" > /dev/null; then
+            echo "Tag $version already exists"
+            exit 0
+          fi
+          git tag "$version"
+          git push origin "$version"
+          gh workflow run main.yml --ref "$version" -f tag="$version"
